@@ -1,11 +1,11 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:news_app/helpers/response.dart';
 import 'package:news_app/widgets/article_widget.dart';
 import 'package:news_app/widgets/dropDownMenus.dart';
 import '../helpers/Api.dart';
 import '../helpers/urlComposer.dart';
-import '../helpers/countryList.dart';
+import '../widgets/searchBar.dart';
 
 class ListPage extends StatefulWidget {
   ListPage({Key? key}) : super(key: key);
@@ -27,6 +27,18 @@ class _ListPageState extends State<ListPage> {
                   });
               
   }
+  void onSearch(newValue){
+      setState(() {
+         _textController.clear();
+         getApiWithKey(newValue);
+       });                 
+
+  }
+  void clearSearch(){
+     setState(() {
+       getApi();
+       });
+     }
   void getApi() {
     futureResponse =
         fetchResponse(UrlComposer.urlWithCountryOfChoice(countryCode, page));
@@ -53,59 +65,18 @@ class _ListPageState extends State<ListPage> {
         appBar: AppBar(
           title: const Text('Whyte News'),
           centerTitle: false,
-          actions: [
-           DropMenu(onChanged: onChanged, value: countryCode)
+          actions:
+          [
+          DropMenu(onChanged: onChanged, value: countryCode)
           ],
         ),
         backgroundColor: Colors.black,
-        body: Column(children: [
-          Container(
-              margin: const EdgeInsets.symmetric(vertical: 6),
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: 50,
-              child: Row(
-                children: [
-                  Flexible(
-                      flex: 7,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          border:Border.all(
-                            color: Colors.white
-                          )
-                        ),
-                        child: TextField(
-                          style: style,
-                          decoration: const InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide.none
-                            ),
-                            enabledBorder:OutlineInputBorder(
-                              borderSide: BorderSide.none
-                            ) ,
-                              hintText: 'Enter a keyword', hintStyle: style),
-                          controller: _textController,
-                          onSubmitted: (value) {
-                            setState(() {
-                              _textController.clear();
-                              getApiWithKey(value);
-                            });
-                          },
-                        ),
-                      )),
-                  IconButton(
-                      onPressed: () {
-                        setState(() {
-                          getApi();
-                        });
-                      },
-                      icon: Icon(
-                        Icons.cancel,
-                        color: Colors.white,
-                      ))
-                ],
-              )),
-          Expanded(
+        body: Column(
+          children: 
+          [
+            SearchBar(onSearch: onSearch, clearSearch:clearSearch , controller:_textController),
+          
+            Expanded(
             child: FutureBuilder(
               future: futureResponse,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -191,6 +162,6 @@ class _ListPageState extends State<ListPage> {
               },
             ),
           )
-        ]));
+         ]));
   }
 }
