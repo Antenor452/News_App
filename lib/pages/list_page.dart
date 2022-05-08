@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/helpers/response.dart';
 import 'package:news_app/widgets/article_widget.dart';
+import 'package:news_app/widgets/dropDownMenus.dart';
 import '../helpers/Api.dart';
 import '../helpers/urlComposer.dart';
 import '../helpers/countryList.dart';
@@ -17,9 +18,15 @@ class _ListPageState extends State<ListPage> {
   int page = 1;
   String countryCode = 'us';
   late Future<Response> futureResponse;
-  final ScrollController _scrollController =
-      ScrollController(keepScrollOffset: true);
+  final ScrollController _scrollController =ScrollController(keepScrollOffset: true);
   final TextEditingController _textController = TextEditingController();
+  void onChanged (newValue){
+                  setState(() {
+                    countryCode = newValue.toString();
+                    getApi();
+                  });
+              
+  }
   void getApi() {
     futureResponse =
         fetchResponse(UrlComposer.urlWithCountryOfChoice(countryCode, page));
@@ -47,36 +54,7 @@ class _ListPageState extends State<ListPage> {
           title: const Text('Whyte News'),
           centerTitle: false,
           actions: [
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 12),
-              child: DropdownButton(
-                dropdownColor: Colors.black,
-                elevation: 0,
-                underline: Container(),
-                alignment: Alignment.center,
-                value: countryCode,
-                icon: const Icon(
-                  Icons.flag,
-                  color: Colors.white,
-                ),
-                onChanged: (newValue) {
-                  setState(() {
-                    countryCode = newValue.toString();
-                    getApi();
-                  });
-                },
-                items: countryCodes.map((String value) {
-                  return DropdownMenuItem(
-                    child: Center(
-                        child: Text(
-                      value,
-                      style: style,
-                    )),
-                    value: value,
-                  );
-                }).toList(),
-              ),
-            )
+           DropMenu(onChanged: onChanged, value: countryCode)
           ],
         ),
         backgroundColor: Colors.black,
