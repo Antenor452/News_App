@@ -122,7 +122,10 @@ class _ListPageState extends State<ListPage> {
                             itemBuilder: (BuildContext context, index) {
                               return ArticleWidget(article: articleList[index]);
                             }),
-                        BottomNavButtons(nextPage: nextPage, prevPage: prevPage, maxPages: maxPages)    
+                        BottomNavButtons(
+                            nextPage: nextPage,
+                            prevPage: prevPage,
+                            maxPages: maxPages)
                       ],
                     );
                   } else {
