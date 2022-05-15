@@ -10,43 +10,34 @@ import '../widgets/navButtons.dart';
 
 class ListPage extends StatefulWidget {
   ListPage({Key? key}) : super(key: key);
- 
 
   @override
   State<ListPage> createState() => _ListPageState();
 }
 
 class _ListPageState extends State<ListPage> {
-   final TextEditingController _controller = TextEditingController();
-   late Future<Response> futureResponse;
-   int page=1;
-   String countryCode = 'us';
+  final TextEditingController _controller = TextEditingController();
+  late Future<Response> futureResponse;
+  int page = 1;
+  String countryCode = 'us';
 
- 
+  //Functions //
+  void onSearch(newValue) {}
+  void clearSearch() {}
 
-
- //Functions //
- void onSearch(newValue){
-
- }
- void clearSearch(){
-
- }
-
- //InitState//
- @override
+  //InitState//
+  @override
   void initState() {
     futureResponse = Functions.getApi(countryCode: countryCode, page: page);
     super.initState();
   }
 
   @override
-  
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title:const Text('NewsAppByWhyte'),
+        title: const Text('NewsAppByWhyte'),
       ),
       body: Container(
         width: double.infinity,
@@ -54,18 +45,32 @@ class _ListPageState extends State<ListPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SearchBar(onSearch: onSearch, clearSearch: clearSearch, controller:_controller),
+            SearchBar(
+                onSearch: onSearch,
+                clearSearch: clearSearch,
+                controller: _controller),
             Expanded(
-              child: FutureBuilder(
-                future: futureResponse,
-                builder: (BuildContext context, AsyncSnapshot snapshot){
-                  return Container();
-                }
-
-                
-                )
-              )
-            
+                child: FutureBuilder(
+                    future: futureResponse,
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.hasData) {
+                        Response response = snapshot.data;
+                        int  itemCount= response.articles.length;
+                        return ListView.builder(
+                          itemCount: itemCount,
+                          itemBuilder:  (context, index){
+                            return ArticleWidget(article: response.articles[index]);
+                            
+                          });
+                          
+                      } else {
+                       return const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.blue,
+                          ),
+                        );
+                      }
+                    })),
           ],
         ),
       ),

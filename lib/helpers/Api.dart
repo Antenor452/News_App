@@ -15,6 +15,7 @@ Future<Response> fetchResponse(String uri) async{
     return Response.fromJson(jsonDecode(response.body));
   }
   else{
-    throw Exception('Failed to load Response');
+    int error = response.statusCode;
+    throw Exception('Failed to load Response ,error code :$error ' );
   }
 }
