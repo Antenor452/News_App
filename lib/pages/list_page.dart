@@ -53,23 +53,48 @@ class _ListPageState extends State<ListPage> {
                 child: FutureBuilder(
                     future: futureResponse,
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (snapshot.hasData) {
-                        Response response = snapshot.data;
-                        int  itemCount= response.articles.length;
-                        return ListView.builder(
-                          itemCount: itemCount,
-                          itemBuilder:  (context, index){
-                            return ArticleWidget(article: response.articles[index]);
-                            
-                          });
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.none:
+                        case ConnectionState.waiting:
+                        case ConnectionState.active:
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.blue,
+                            ),
+                          );
+                        case ConnectionState.done:
+                        Response response=snapshot.data;
+                        if(snapshot.hasData && !snapshot.hasError && response.totalResults!=0){
+                        int itemCount = response.articles.length;
+
+                          return  ListView(
+                            children: [
+                              Flex(direction: Axis.vertical,
+                              children: [ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: const ScrollPhysics(),
+                                        itemCount: itemCount,
+                                        itemBuilder: (context, index) {
+                                          return ArticleWidget(
+                                            article: response.articles[index],
+                                          );
+                                        })],
+                              )
+                            ],
+                          );
+                        }
                           
-                      } else {
-                       return const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.blue,
-                          ),
-                        );
-                      }
+                        if(response.totalResults==0){
+                          return const Center(
+                            child: Text('No results'),
+                          );
+                        }
+                        else{
+                          return Center();
+                        }
+                       
+                        }
+                       
                     })),
           ],
         ),
